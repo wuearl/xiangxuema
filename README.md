@@ -1,16 +1,34 @@
-<h2 align="center">“想学吗”个人知识管理工具</h2>
+<h1 align="center">“想学吗”个人知识管理工具</h1>
+
+## 重要声明
+
+如果你是自媒体作者，我建议你使用“赤星”自媒体内容管理工具来替代本产品；
+
+windows版本：   http://download.redredstar.com/latest.exe
+
+mac版本：       http://download.redredstar.com/latest.dmg
+
 
 ## 程序简介
 
- “想学吗”是一个更快的、私有化的、标签式的、持续演进的个人知识管理工具；
+ “想学吗”是一个更快的、私有化的、标签式的、持续演进的个人知识管理与自媒体营销工具；
+
+ 目前支持把文章发布到：
+ 
+ 博客平台：博客园、开源中国、知乎、CSDN、简书、豆瓣
+
+ 自媒体平台：百家号、企鹅号、头条号、奇艺号、大鱼号、搜狐号、微信公众号
 
 ## 下载地址
 
-* osx64: 
-<br />http://xiangxuema.com/download/%E6%83%B3%E5%AD%A6%E5%90%97-6.3.8.dmg
-
 * win64: 
-<br />http://xiangxuema.com/download/%E6%83%B3%E5%AD%A6%E5%90%97%20Setup%206.3.8.exe
+<br />http://xiangxuema.com/download/latest.exe
+
+* osx64: 
+<br />http://xiangxuema.com/download/latest.dmg
+
+* linux64: 
+<br />http://xiangxuema.com/download/latest.AppImage
 
 * chrome插件(无需翻墙，需手动安装): 
 <br />http://xiangxuema.com/chrome_extension/xiangxuema.crx 
@@ -30,19 +48,27 @@
 * 文章发布到目标平台不夹带任何“尾巴”；
 * “想学吗”浏览器插件包括文章收集功能和思想火花收集功能，可以快速收集互联网的文章或简短的文字；
 * “想学吗”浏览器插件收集文章时，也会把文章内的图片下载到本地；
+* “想学吗”还提供思维导图的功能，可以快速梳理构建您脑海中的想法
 
 ## 其他说明：
 
 * osx数据存放目录： 
 <br />&emsp;&emsp; /Users/[name]/Library/Application Support/xiangxuema/xxm
 * win数据存放目录：
-<br />&emsp;&emsp; C:\Users\[name]\AppData\Roaming\xiangxuema\xxm
+<br />&emsp;&emsp; C:\Users\\[name]\AppData\Roaming\xiangxuema\xxm
+* linux数据存放目录： 
+<br />&emsp;&emsp; /home/[name]/.config/xiangxuema
 * 本地编译说明：
 <br />&emsp;&emsp; https://github.com/xland/xiangxuema/blob/master/doc/build.md
 * 责权声明：
 <br />&emsp;&emsp; 本软件为非盈利、开源软件，任何责任与义务均由使用者承担，与开发者无关；
 
 ## 界面截图
+
+<p align="center">
+对接的平台<br />
+<img width="680" src="/doc/imgs/site.png" />
+</p>
 
 <p align="center">
 知识检索<br />
@@ -79,6 +105,11 @@ markdown编辑器<br />
 <img width="680" src="/doc/imgs/markdown.jpg" />
 </p>
 
+<p align="center">
+脑图<br />
+<img width="680" src="/doc/imgs/mind.png" />
+</p>
+
 ## 联系方式
 
 * 联系方式：412588801@qq.com
@@ -91,5 +122,7 @@ markdown编辑器<br />
 *  <a href="http://xin-lai.com" target="_blank">湖南心莱信息科技有限公司</a>
 *  <a href="http://www.senparc.com/" target="_blank">苏州盛派网络科技有限公司</a>
 *  杭州软雅科技有限公司
+*  Franky J ，<a href="https://www.cnblogs.com/asxinyu" target="_blank">数据之巅</a>
+*  衡水浩伦科技有限公司
 *  <a href="https://juejin.im/post/5c9c49d451882547e46dd6c3" target="_blank">公众号「 程序员的成长之路 」</a>
 *  Franky J ，<a href="https://www.cnblogs.com/asxinyu" target="_blank">数据之巅</a>

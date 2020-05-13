@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const {
     clipboard,
     ipcRenderer,
@@ -13,17 +11,11 @@ let imgProcessor = {
     guard: 0,
     uploadImg(dom, file) {
         let fd = new FormData();
-        fd.append("subModule", "normal_zhengwen");
-        fd.append("id", "WU_FILE_" + this.guard);
-        fd.append("name", file.name);
-        fd.append("type", file.type);
-        fd.append('lastModifiedDate', new Date());
-        fd.append('Filename', file.name);
-        fd.append("Filedata", file);
-        let url = "https://om.qq.com/image/archscaleupload?isRetImgAttr=1&relogin=1";
+        fd.append('file', file);
+        var url = 'https://mp.sohu.com/commons/upload/file';
         base.post(url, fd, (r) => {
             var imgObj = JSON.parse(r);
-            dom.src = imgObj.data.url.size['641'].imgurl;
+            dom.src = "http:" + imgObj.url;
             ipcRenderer.send('imgUploadMain', {
                 id: dom.id,
                 siteId: this.siteId,
@@ -33,7 +25,7 @@ let imgProcessor = {
             if (this.guard < 1) {
                 this.end();
             }
-        })
+        });
     },
     end() {
         this.imgs.forEach(v => {
@@ -44,25 +36,26 @@ let imgProcessor = {
                 delete v.dataset[ds];
             })
         });
-        let iframe = document.getElementById("ueditor_0").contentWindow
-        iframe.editor.setContent(this.doc.body.innerHTML);
         var win = remote.BrowserWindow.fromId(this.winId);
         win.focus();
-        let titleTb = document.querySelector("label.input-control-title").children[0];
-        titleTb.focus();
-        titleTb.value = "";
-        clipboard.writeText(this.title);
-        win.webContents.paste();
-        base.ajaxInjector(obj => {
-            if (obj && obj.response && obj.response.msg == "Save success" && obj.data) {
-                let id = obj.data.articleId;
+        setTimeout(() => {
+            let ta = document.querySelector(".title>.title");
+            ta.value = ""
+            ta.focus();
+            setTimeout(() => {
+                clipboard.writeText(this.title);
+                win.webContents.paste();
+                base.clearMask();
+            }, 380);
+        }, 880);
+        editor.__quill.clipboard.dangerouslyPasteHTML(this.doc.body.innerHTML);
+        base.ajaxInjector((obj, url) => {
+            if (obj && url == 'https://mp.sohu.com/v3/news/draft')
                 ipcRenderer.send('articlePublishMain', {
-                    siteId: this.siteId,
-                    url: 'https://om.qq.com/article/articlePublish?articleId=' + id + '&atype=0'
+                    siteId: 'souhuhao',
+                    url: 'https://mp.sohu.com/mpfe/v3/main/news/addarticle?contentStatus=2&id=' + obj
                 });
-            }
         })
-        base.clearMask();
     },
     start() {
         base.maskPage();
@@ -88,32 +81,24 @@ let imgProcessor = {
         this.start();
     }
 }
-
 var waitForReady = function(cb) {
     setTimeout(function() {
-        if (!document.getElementById("ueditor_0")) {
-            waitForReady(cb);
-            return;
-        }
-        let win = document.getElementById("ueditor_0").contentWindow;
-        if (!win.editor) {
+        if (!document.querySelector(".ql-editor")) {
             waitForReady(cb);
             return;
         }
         cb();
-    }, 280);
+    }, 380);
 }
 ipcRenderer.on('message', (event, article) => {
     base.removeBeforUnload();
-    let url = window.location.href;
-    if (url == "https://om.qq.com/userAuth/index") {
+    var url = window.location.href;
+    if (url == "https://mp.sohu.com/mpfe/v3/main/first/page") {
+        window.location.href = article.url;
         return;
     }
-    if (!url.startsWith('https://om.qq.com/article/articlePublish')) {
-        window.location.href = article.url
-        return;
-    }
-    waitForReady(() => {
+    waitForReady(function() {
         imgProcessor.init(article);
     })
+    return;
 })

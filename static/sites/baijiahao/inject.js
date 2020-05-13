@@ -36,19 +36,18 @@ let imgProcessor = {
     },
     end() {
         this.imgs.forEach(v => {
-            if(v.dataset[this.siteId]){
+            if (v.dataset[this.siteId]) {
                 v.src = v.dataset[this.siteId];
             }
             Object.keys(v.dataset).forEach(ds => {
                 delete v.dataset[ds];
             })
         });
-        window.onbeforeunload = null;
         let iframe = document.getElementById("ueditor_0").contentWindow
         iframe.editor.setContent(this.doc.body.innerHTML);
         var win = remote.BrowserWindow.fromId(this.winId);
         win.focus();
-        let titleTb = document.querySelector("input.ant-input");
+        let titleTb = document.querySelector("textarea.ant-input");
         titleTb.focus();
         titleTb.value = "";
         clipboard.writeText(this.title);
@@ -61,11 +60,13 @@ let imgProcessor = {
                     url: 'https://baijiahao.baidu.com/builder/rc/edit?type=news&article_id=' + id
                 });
             }
-        })
+        });
+        base.clearMask();
     },
     start() {
+        base.maskPage();
         this.imgs.forEach(v => {
-            if(this.type == 'new'){
+            if (this.type == 'new') {
                 delete v.dataset[this.siteId];
             }
             if (!v.dataset[this.siteId]) {
@@ -87,8 +88,8 @@ let imgProcessor = {
     }
 }
 
-var waitForReady = function (cb) {
-    setTimeout(function () {
+var waitForReady = function(cb) {
+    setTimeout(function() {
         if (!document.getElementById("ueditor_0")) {
             waitForReady(cb);
             return;
@@ -105,8 +106,9 @@ var waitForReady = function (cb) {
 //editor.setContent("allen");
 //https://baijiahao.baidu.com/builderinner/api/content/file/upload
 //img up response success","ret":{"app_id":1587171278593857,"bos_url":"http:\/\/pic.rmb.bdstatic.com\
+"https://baijiahao.baidu.com/builder/rc/edit?type=news&app_id=1643526549649285"
 ipcRenderer.on('message', (event, article) => {
-    window.onbeforeunload = null;
+    base.removeBeforUnload();
     let url = window.location.href;
     if (url.startsWith('https://baijiahao.baidu.com/builder/rc/edit')) {
         if (article.type == "edit" && url != article.url) {
@@ -114,8 +116,9 @@ ipcRenderer.on('message', (event, article) => {
             return;
         }
         waitForReady(() => {
-            window.onbeforeunload = null;
             imgProcessor.init(article);
         })
+    } else if (url.startsWith('https://baijiahao.baidu.com/?source=inner')) {
+        window.location.href = article.url
     }
 })

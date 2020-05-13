@@ -32,14 +32,13 @@ let imgProcessor = {
     },
     end() {
         this.imgs.forEach(v => {
-            if(v.dataset[this.siteId]){
+            if (v.dataset[this.siteId]) {
                 v.src = v.dataset[this.siteId];
             }
             Object.keys(v.dataset).forEach(ds => {
                 delete v.dataset[ds];
             })
         });
-        window.onbeforeunload = null;
         CKEDITOR.instances["editor"].setData(this.doc.body.innerHTML)
         document.getElementById("txtTitle").value = this.title;
         base.ajaxInjector(obj => {
@@ -53,11 +52,13 @@ let imgProcessor = {
                     url: 'https://mp.csdn.net/postedit/' + id
                 });
             }
-        })
+        });
+        base.clearMask();
     },
     start() {
+        base.maskPage();
         this.imgs.forEach(v => {
-            if(this.type == 'new'){
+            if (this.type == 'new') {
                 delete v.dataset[this.siteId];
             }
             if (!v.dataset[this.siteId]) {
@@ -81,23 +82,18 @@ let imgProcessor = {
 
 
 ipcRenderer.on('message', (event, article) => {
-    window.onbeforeunload = null;
+    base.removeBeforUnload();
     let url = window.location.href;
-    if(url.startsWith("https://mp.csdn.net/mdeditor")){
+    if (url.startsWith("https://mp.csdn.net/mdeditor")) {
         alert("抱歉：目前暂不支持csdn的markdown编辑器,请修改默认编辑器");
-        setTimeout(()=>{
-            window.onbeforeunload = null;
-        },960);
         return;
     }
     if (url.startsWith('https://mp.csdn.net/postedit')) {
-        setTimeout(()=>{
-            window.onbeforeunload = null;
-            if(!document.getElementById("cke_editor")){
+        setTimeout(() => {
+            if (!document.getElementById("cke_editor")) {
                 alert("抱歉：目前暂不支持csdn的markdown编辑器");
-                window.onbeforeunload = null;
             }
             imgProcessor.init(article);
-        },960)
+        }, 960)
     }
 })

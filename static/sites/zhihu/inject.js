@@ -13,7 +13,6 @@ let imgProcessor = {
     guard: 0,
     cleanContent(win) {
         let modifiers = os == "darwin" ? ['meta'] : ['control'];
-        //let keyCode = os == "darwin" ? 'Meta' : 'Control';
         let keyCode = 'a';
         win.webContents.sendInputEvent({
             type: 'keyDown',
@@ -30,24 +29,6 @@ let imgProcessor = {
             modifiers,
             keyCode
         })
-        // browserWindow.webContents.sendInputEvent({
-        //     type: 'keyDown',
-        //     keyCode
-        // });
-        // browserWindow.webContents.sendInputEvent({
-        //     type: 'keyDown',
-        //     keyCode: 'A',
-        //     modifiers
-        // });
-        // browserWindow.webContents.sendInputEvent({
-        //     type: 'keyUp',
-        //     keyCode: 'A',
-        //     modifiers
-        // });
-        // browserWindow.webContents.sendInputEvent({
-        //     type: 'keyUp',
-        //     keyCode
-        // });
     },
     uploadImg(dom, file) {
         let fd = new FormData();
@@ -91,11 +72,11 @@ let imgProcessor = {
                 win.webContents.paste();
             }, 380);
         }, 880);
-        setTimeout(function () {
+        setTimeout(function() {
             win.focus();
             let editorDoc = document.querySelector(".public-DraftStyleDefault-block");
             editorDoc.click();
-            setTimeout(function () {
+            setTimeout(function() {
                 //this.cleanContent(win);
                 const selection = window.getSelection();
                 const range = document.createRange();
@@ -104,6 +85,7 @@ let imgProcessor = {
                 selection.addRange(range);
                 clipboard.writeHTML(this.doc.body.innerHTML);
                 win.webContents.paste();
+                base.clearMask();
                 ipcRenderer.send('articlePublishMain', {
                     siteId: 'zhihu',
                     url: window.location.href
@@ -112,6 +94,7 @@ let imgProcessor = {
         }.bind(this), 1600);
     },
     start() {
+        base.maskPage();
         this.imgs.forEach(v => {
             if (this.type == 'new') {
                 delete v.dataset[this.siteId];
@@ -136,7 +119,7 @@ let imgProcessor = {
 }
 
 ipcRenderer.on('message', (event, article) => {
-    window.onbeforeunload = null;
+    base.removeBeforUnload();
     var url = window.location.href;
     if (url.startsWith("https://www.zhihu.com/signin")) {
         return;

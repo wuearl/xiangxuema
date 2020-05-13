@@ -15,6 +15,7 @@ let imgProcessor = {
         let urlParams = {
             action: 'upload_material',
             f: 'json',
+            scene: 8,
             writetype: 'doublewrite',
             groupid: 3,
             ticket_id: '',
@@ -23,7 +24,8 @@ let imgProcessor = {
         }
         let postUrl = 'https://mp.weixin.qq.com/cgi-bin/filetransfer?'
         remote.session.defaultSession.cookies.get({}, (error, cookies) => {
-            urlParams.ticket_id = cookies.find(v => v.name == "ticket_id").value;
+            let cookieTid = cookies.find(v => v.name == "ticket_id") || cookies.find(v => v.name == "slave_user")
+            urlParams.ticket_id = cookieTid.value;
             Object.keys(urlParams).forEach(key => {
                 postUrl += key + '=' + urlParams[key] + "&";
             });
@@ -56,18 +58,18 @@ let imgProcessor = {
     },
     end() {
         this.imgs.forEach(v => {
-            if(v.dataset[this.siteId]){
+            if (v.dataset[this.siteId]) {
                 v.src = v.dataset[this.siteId];
             }
             Object.keys(v.dataset).forEach(ds => {
                 delete v.dataset[ds];
             })
         });
-        setTimeout(()=>{
-            window.onbeforeunload = null;
+        setTimeout(() => {
             UE.instants.ueditorInstant0.setContent(this.doc.body.innerHTML);
             document.getElementById("title").value = this.title;
-        },600);
+            base.clearMask();
+        }, 600);
         base.ajaxInjector(obj => {
             if (obj && obj.appMsgId) {
                 let url = 'https://mp.weixin.qq.com/?appmsgid=' + obj.appMsgId;
@@ -79,8 +81,9 @@ let imgProcessor = {
         })
     },
     start() {
+        base.maskPage();
         this.imgs.forEach(v => {
-            if(this.type == 'new'){
+            if (this.type == 'new') {
                 delete v.dataset[this.siteId];
             }
             if (!v.dataset[this.siteId]) {
@@ -102,8 +105,12 @@ let imgProcessor = {
     }
 }
 
-var waitForReady = function (cb) {
-    setTimeout(function () {
+var waitForReady = function(cb) {
+    setTimeout(function() {
+        if (document.querySelector('.icon_page_error')) {
+            window.location.href = 'https://mp.weixin.qq.com/';
+            return;
+        }
         if (!document.getElementById("ueditor_0")) {
             waitForReady(cb);
             return;
@@ -113,6 +120,7 @@ var waitForReady = function (cb) {
 }
 
 ipcRenderer.on('message', (event, article) => {
+    base.removeBeforUnload();
     let url = window.location.href;
     let token = base.getUrlParam(url, "token");
     let type = base.getUrlParam(url, "type");
@@ -130,8 +138,7 @@ ipcRenderer.on('message', (event, article) => {
         return;
     }
     if (token && type == "10") {
-        waitForReady(function () {
-            window.onbeforeunload = null;
+        waitForReady(function() {
             imgProcessor.init(article);
         });
     }

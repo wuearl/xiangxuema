@@ -14,18 +14,17 @@ module.exports = {
     },
     ajaxInjector(cb) {
         var open = window.XMLHttpRequest.prototype.open;
-        window.XMLHttpRequest.prototype.open = function (method, url, async, user, pass) {
-            this.addEventListener("readystatechange", function () {
+        window.XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+            this.addEventListener("readystatechange", function() {
                 if (this.readyState === 4) {
                     try {
                         var obj = null;
-                        if(this.responseType == "json") {
+                        if (this.responseType == "json") {
                             obj = this.response;
-                        } else{
+                        } else {
                             obj = JSON.parse(this.responseText);
                         }
-                        obj.ajax_post_url = this.responseURL;
-                        cb(obj);
+                        cb(obj, this.responseURL);
                     } catch (error) {
                         cb(null);
                     }
@@ -96,8 +95,24 @@ module.exports = {
         return file;
     },
     removeBeforUnload() {
-        setInterval(() => {
-            window.onbeforeunload = null;
-        }, 560);
+        var wc = remote.getCurrentWebContents();
+        wc.on('will-prevent-unload', event => {
+            var win = remote.BrowserWindow.fromWebContents(wc);
+            win.destroy();
+        })
+    },
+    maskPage() {
+        let temp = document.createElement("div");　　
+        temp.innerHTML = `<div id="xxm__post__mask"
+        style="position:absolute;left:0px;right:0px;bottom:0px;top:0px;z-index:99999999;background:rgba(0,0,0,0.8);text-align:center;color:#fff;"
+      >
+        <div style="font-size:46px;padding-top:160px;font-weight:600;">正在提交...</div>
+        <div style="font-size:22px;padding-top:20px;">目标平台编辑器需设置为HTML编辑器<br />确保文章内图片无差错</div>
+      </div>`;
+        document.body.appendChild(temp.children[0]);
+    },
+    clearMask() {
+        let dom = document.querySelector("#xxm__post__mask");
+        if (dom) document.body.removeChild(dom);
     }
 }
